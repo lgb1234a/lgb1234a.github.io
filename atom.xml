@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Chenyn</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2018-04-04T09:40:10.285Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>Gongbiao Le</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>写在“新“的一年</title>
+    <link href="http://yoursite.com/2018/04/02/start/"/>
+    <id>http://yoursite.com/2018/04/02/start/</id>
+    <published>2018-04-02T09:26:00.000Z</published>
+    <updated>2018-04-04T09:40:10.285Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>自从上回简书#饱醉豚事件把之前发布在简书上的文章撤下之后，有很长一段时间没有写过技术有关的文章了。加之，最近这段时间，公司开始要求加班，想着，刚好用加班的时间来学点什么吧。于是临时搭了个blog，就辟为自己平时技术分享和生活感悟的一个平台吧。</p></blockquote><a id="more"></a><h2 id="回首2017年"><a href="#回首2017年" class="headerlink" title="回首2017年"></a>回首2017年</h2><p>于2017年入职现在的公司，刚好是我毕业后整一年的时间点，也是来南京的第五个年头，这一年相对实习那段时间，好歹算稳定的吧。要说最大的收获，当然是结识了我可爱的小姐姐，收获了渴望已久的爱情啦。</p><h2 id="2018年想做的事"><a href="#2018年想做的事" class="headerlink" title="2018年想做的事"></a>2018年想做的事</h2><p>2018年，意味着我正式从事研发工作要满2年了，这也是一个程序员职业生涯中非常关键的节点。前两年的自己，技术栈可能还是仅仅停留在自己平时的业务层面上，对于未来的技术方向都是迷茫的：<em><strong>是该继续深挖iOS，往架构，逆向等方向深入，还是要去接触前端，慢慢往后端推进，往全栈方向发展。</strong></em></p><p><strong>最后列了一下2018年接下来的时间里需要深入了解的一些技术点和知识储备。</strong></p><p><strong>iOS方面：</strong></p><ol><li>深入阅读两个热门的开源库源码：<em><code>AFNetworking</code></em>、<em><code>SDWebimage</code></em>；</li><li>iOS技术栈方向： <code>Jerkins</code><strong>持续集成和自动化工具</strong>、<code>iOS</code><strong>响应式框架</strong><code>RAC</code>/<code>RxSwift</code></li><li>iOS基础知识：<strong>多线程操作</strong>、<strong>iOS常用网络协议</strong>（<code>http/https/socket/WebSocket/TCP/IP）</code>、<strong>内存/性能相关</strong>、<strong>渲染</strong><code>（CoreText/CoreGraphics/CoreAnimation）</code></li><li>脚本语言：<code>Ruby</code>/<code>Python</code></li></ol><h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>最近会把之前的文章挑几篇出来整理一下，然后重新排版发布，充充门面，统一时间戳为2018-4-1——一个比较有个性的日子。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;自从上回简书#饱醉豚事件把之前发布在简书上的文章撤下之后，有很长一段时间没有写过技术有关的文章了。加之，最近这段时间，公司开始要求加班，想着，刚好用加班的时间来学点什么吧。于是临时搭了个blog，就辟为自己平时技术分享和生活感悟的一个平台吧。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="生活感悟" scheme="http://yoursite.com/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%82%9F/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>CoreMotion计算设备yaw方向的旋转角度</title>
+    <link href="http://yoursite.com/2018/04/01/CoreMotion/"/>
+    <id>http://yoursite.com/2018/04/01/CoreMotion/</id>
+    <published>2018-03-31T16:00:00.000Z</published>
+    <updated>2018-04-04T09:39:27.867Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>先说说公司需求吧，这个需求里面有一个部分要做一个雷达，这个雷达要监听我的设备沿y轴旋转<strong>（为啥是y轴下面会提到）</strong>的倾角，然后根据这个倾角，雷达可以判断当前位置的物体是否在我的镜头范围内。</p></blockquote><a id="more"></a><h2 id="先挖一个坑"><a href="#先挖一个坑" class="headerlink" title="先挖一个坑"></a>先挖一个坑</h2><p>关于陀螺仪的创建和用法我这里按下不提，因为遇到这个问题的小伙伴对于获取<code>CMDeviceMotion</code>对象应该没什么问题。（<strong>啥，你说有？那就出门百度陀螺仪用法或者参考我后面给出的<a href="https://github.com/lgb1234a/TNMapARDemo" target="_blank" rel="noopener">demo</a></strong>）</p><p><strong>下面是第一个需要注意的地方：</strong>系统提供的<code>block</code>是在一个异步线程，所以如果需要做UI操作，请回到主线程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//Push方式获取和处理数据</span><br><span class="line">__weak typeof(self) weafSelf = self;</span><br><span class="line">[self.motionManager startDeviceMotionUpdatesToQueue:queue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) &#123;</span><br><span class="line">    // 首先这里是在一个异步线程，要刷新UI操作的话，需要回到主线程。</span><br><span class="line">    [weafSelf updateRadarStatuWithDeviceMotion:motion];</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure></p><p>现在，拿到了我们要的<code>CMDeviceMotion</code>对象，要获取旋转角度，自然要找到我们需要的那个参数，先请看下图（<a href="http://blog.denivip.ru/index.php/2013/07/the-art-of-core-motion-in-ios/?lang=en" target="_blank" rel="noopener">图片来源，有精力的同学可以看看这篇文章，里面非常系统的解释了CoreMotion里面一些现象的成因，有些坑我也是在这里找到解决方案的</a>）：</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-61b222ffc7193549.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400" alt="CoreMotionRotationAxes.png"></p><p>现在知道了我们需要获取y轴旋转角度的原因<strong>（x轴，z轴同理，就没必要一一介绍了）</strong>，我把关于设备当前放置状态的代码直接挑出来了：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//4 代码来自上面我希望大家去看的那篇文章</span><br><span class="line">CMAttitude *attitude = self.motionManager.deviceMotion.attitude;</span><br><span class="line">self.pitch.text = [NSString stringWithFormat:@&quot;%.3f&quot;, attitude.pitch];</span><br><span class="line">self.roll.text = [NSString stringWithFormat:@&quot;%.3f&quot;, attitude.roll];</span><br><span class="line">self.yaw.text = [NSString stringWithFormat:@&quot;%.3f&quot;, attitude.yaw];</span><br></pre></td></tr></table></figure><p>其中<code>yaw</code>就是设备绕y轴的偏转角度，当时满心欢喜拿这个数据去旋转雷达中的镜头：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// yaw角度为零的时候，就是出生点位置（注意这一块代码需要放在主线程中操作，参考[demo](https://github.com/lgb1234a/TNMapARDemo)）</span><br><span class="line">self.radarBackImgView.layer.anchorPoint = CGPointMake(0.5, 0.5);</span><br><span class="line">self.radarBackImgView.transform = CGAffineTransformMakeRotation(yaw);</span><br></pre></td></tr></table></figure><p>这样做，乍一看确实实现了我的需求，雷达中显示的镜头确实和我设备旋转是同步的，<strong>但是呢，看下面动图：</strong></p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-4005cd4b9a18b617.gif?imageMogr2/auto-orient/strip" alt="大辉哥强势出镜😂.gif"></p><p><strong>我现在将设备上下旋转，注意看右上角的雷达，居然也会出现旋转的情况，这说明yaw这个值会被roll和pitch影响，原文说明：</strong></p><p><code>At the first glance, nothing is complex here. All the angles duly change their value at device rotation. However, if we look closer, we can see that yaw can sometimes flip by somewhat 180 degrees at other angles’ change. So it means that changes in roll and pitch can affect yaw.</code></p><p><code>This post provides details of the issue called gimbal lock, along with its effect on Euler angles. The author also has mentioned the 180 degrees flip which you surely would like to avoid if animation of any on-screen objects depends on yaw.</code></p><p>对，你遇到了著名的<strong>万向节死锁问题</strong>，惊不惊喜，意不意外？所以作者特意告知大家，<strong>不要依赖yaw这个属性去做任何屏幕上控件的动画。</strong></p><p>好了，坑貌似已经说得很明确了，如果还觉得云里雾里的，强烈建议去看我上面说的那篇<a href="http://blog.denivip.ru/index.php/2013/07/the-art-of-core-motion-in-ios/?lang=en" target="_blank" rel="noopener">原文</a>，作者说的非常详细！！</p><h2 id="那我们该怎么办呢？？"><a href="#那我们该怎么办呢？？" class="headerlink" title="那我们该怎么办呢？？"></a>那我们该怎么办呢？？</h2><p>再来看看那篇文章里面还说了什么（膜拜作者大大）：</p><p><code>The post also mentions that a common way to avoid gimbal lock is to avoid Euler angles in favor of other ways of describing spacial orientation. Particularly, you can use quaternions.</code></p><p><strong>作者说，为了避免万向节死锁问题</strong>（说术语的感觉好爽啊，以后可以出去吹比了：你知道啥叫万向节死锁吗？咳~正经点！）<strong>，就不要用这个系统直接返回给你的欧拉角度</strong>（哎，太廉价的东西就是不好用），<strong>那我们用啥啊？贴心的作者说了，你可以用<code>quaternions</code></strong>（这玩意逼格更高，不信你去维基百科搜<code>四元数</code>，鉴于我现在没空深挖理论，<em>也挖不动</em>😂）。</p><p>现在知道了要用<strong>四元数</strong>去做，可是作者你没说完啊，我只知道要用它，但是还无从下手~</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-8fb8b6402c01223e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/480" alt="CMAttitude的属性.png"></p><p>最后只能求助于万能的gg：</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-a182333fe5098540.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/480" alt="搜索项.png"></p><p>嗯，结果有非常多，看来踩坑的人不少，各路算法简直琳琅满目，我就不给大家一一甄别了，直接上我找到的最满意的算法，完美解决了我现在遇到的问题，<a href="https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles" target="_blank" rel="noopener">维基百科-《Conversion between quaternions and Euler angles》</a>：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">static void toEulerianAngle(const Quaterniond&amp; q, double&amp; roll, double&amp; pitch, double&amp; yaw)</span><br><span class="line">&#123;</span><br><span class="line">double ysqr = q.y() * q.y();</span><br><span class="line"></span><br><span class="line">// roll (x-axis rotation)</span><br><span class="line">double t0 = +2.0 * (q.w() * q.x() + q.y() * q.z());</span><br><span class="line">double t1 = +1.0 - 2.0 * (q.x() * q.x() + ysqr);</span><br><span class="line">roll = std::atan2(t0, t1);</span><br><span class="line"></span><br><span class="line">// pitch (y-axis rotation)</span><br><span class="line">double t2 = +2.0 * (q.w() * q.y() - q.z() * q.x());</span><br><span class="line">t2 = ((t2 &gt; 1.0) ? 1.0 : t2);</span><br><span class="line">t2 = ((t2 &lt; -1.0) ? -1.0 : t2);</span><br><span class="line">pitch = std::asin(t2);</span><br><span class="line"></span><br><span class="line">// yaw (z-axis rotation)</span><br><span class="line">double t3 = +2.0 * (q.w() * q.z() + q.x() * q.y());</span><br><span class="line">double t4 = +1.0 - 2.0 * (ysqr + q.z() * q.z());</span><br><span class="line">yaw = std::atan2(t3, t4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>嗯，这是个C++的算法（废话！），然后各位可以按照自己的需求，套用一下，至少对我的业务来说，是完全OK的~</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;先说说公司需求吧，这个需求里面有一个部分要做一个雷达，这个雷达要监听我的设备沿y轴旋转&lt;strong&gt;（为啥是y轴下面会提到）&lt;/strong&gt;的倾角，然后根据这个倾角，雷达可以判断当前位置的物体是否在我的镜头范围内。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="iOS开发" scheme="http://yoursite.com/categories/iOS%E5%BC%80%E5%8F%91/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Xcode8频繁crash，且crash位置随机，无崩溃原因</title>
+    <link href="http://yoursite.com/2018/04/01/Xcode-8%E5%9C%A8iOS9-3%E4%B9%8B%E5%89%8D%E7%9A%84%E8%AE%BE%E5%A4%87%EF%BC%88%E7%9C%9F%E6%9C%BA%E6%88%96%E6%A8%A1%E6%8B%9F%E5%99%A8%EF%BC%89%E4%B8%8A%E8%B0%83%E8%AF%95%EF%BC%8C%E9%A2%91%E7%B9%81crash%EF%BC%8Ccrash%E4%BD%8D%E7%BD%AE%E9%9A%8F%E6%9C%BA%EF%BC%8C%E4%B8%94%E6%97%A0%E5%B4%A9%E6%BA%83%E5%8E%9F%E5%9B%A0%20/"/>
+    <id>http://yoursite.com/2018/04/01/Xcode-8在iOS9-3之前的设备（真机或模拟器）上调试，频繁crash，crash位置随机，且无崩溃原因 /</id>
+    <published>2018-03-31T16:00:00.000Z</published>
+    <updated>2018-04-04T09:40:50.095Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>这次，对公司的线上项目进行一次小的升级，主要是针对iOS10的一些适配和之前存在的小问题进行修复。却在测试阶段出现了各种闪退，其中有：EXC_BAD_ACCESS, SIGNAL SIGABRT,且crash位置各异，并且只在iOS9.3以下闪退（此处可能不严谨，测试机只有iOS8.4以及iOS9.X、iOS10），而且Xcode 7在任何版本iOS都不闪退。</p></blockquote><a id="more"></a><h3 id="苦逼的调试过程"><a href="#苦逼的调试过程" class="headerlink" title="苦逼的调试过程"></a>苦逼的调试过程</h3><p>刚开始会在启动过程中频繁闪退，是由于苹果那边注册APNs频繁失败，导致JPush频繁占用主线程去重复注册，启动时间过长，然后进程被杀掉所导致的。</p><p>接下来也是按照原有的思路去调试，设置僵尸对象、检查内存泄漏，由于我们的项目是基于RectNative框架下开发的，JS端也是我怀疑的重点。但是由于根本无法获取的崩溃的log，并且每次崩溃都不是说集中在某个位置，Xcode 7不会崩溃，iOS9以上也不会崩溃。所以我感觉不是代码问题，而是Xcode 8引发的，就把调试思路换到Xcode 8的新特性上面。是不是我少了什么配置信息？</p><p>但是我之前出的项目，也是用的Xcode 8，但并不会出现这样的问题，所以肯定是我所不知道的原因导致的。</p><h3 id="苦逼的Google之旅"><a href="#苦逼的Google之旅" class="headerlink" title="苦逼的Google之旅"></a>苦逼的Google之旅</h3><p>由于墙内的关于Xcode8 以及iOS 10的相关信息实在是太少，还是选择了GG。</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-bca1ac7e774a1675.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ20160926-0@2x.png"></p><p>看到这个random的时候，感觉看到了一丝曙光，进去一看<a href="https://openradar.appspot.com/28371396" target="_blank" rel="noopener">一个传送门</a>，更加坚信了我的判断，以及<a href="https://forums.developer.apple.com/thread/60919" target="_blank" rel="noopener">苹果开发者关于此类问题的描述</a>。</p><p>大意就是：你的项目中如果包含了16位或者是支持P3宽色域的image asset，那么请将项目运行在iOS9.3以上（原文为“以下”，感觉可能是笔误）。对于那些对图像要求并不高的项目，又希望兼容老的版本的设备，那么请将16位图换成8位的图。</p><h3 id="试试这根找到的救命稻草"><a href="#试试这根找到的救命稻草" class="headerlink" title="试试这根找到的救命稻草"></a>试试这根找到的救命稻草</h3><p>文中给出了详细的操作步骤来找到需要替换的图片：</p><ol><li>先把你的项目打出一个.ipa的包(如果你没有开发者证书，那么，请试试<a href="http://stackoverflow.com/questions/39404285/xcode-8-build-crash-on-ios-9-2-and-below" target="_blank" rel="noopener">第二个answer的脚本，未亲测，不保证有效哦~</a>)；</li><li>.ipa改成.zip格式；</li><li>解压缩之后会有一个名为“Payload folder”的文件夹，里面有一个.app；</li><li><p>打开终端，将当前工作路径改为“.app”之下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd path/to/Payload/your.app</span><br></pre></td></tr></table></figure></li><li><p>看看你的.app是否包含了一个“Assets.car”的文件，里面就可能有导致你程序崩溃的罪魁祸首；</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 查看路径下所有文件，当然在文件灰常多的情况下，可以用find命令</span><br><span class="line">$ ls</span><br><span class="line">//抑或</span><br><span class="line">$ find . -name Assets.car</span><br></pre></td></tr></table></figure></li><li><p>要找出里面的16位图或者支持P3的image asset，现将这个文件用下面命令转成JSon格式：<strong>(/tmp/Assets.json为转出后的文件路径，可直接打开finder, cmd-shift-G，复制粘贴即可定位到)</strong></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo xcrun --sdk iphoneos assetutil --info Assets.car &gt; /tmp/Assets.json</span><br></pre></td></tr></table></figure></li><li><p>然后打开这个JSon文件，找出含有<code>&quot;DisplayGamut&quot;: &quot;P3&quot;</code> 配置的那个区块，对应<code>Name</code>这个Key的值就是这张图片的名字，如下图：</p></li></ol><p><img src="http://upload-images.jianshu.io/upload_images/1445324-6746e0c5311850ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="2A9766A3-526D-4D70-898F-D68423305B3A.png"></p><p>8.在你的工程中找到叫这个名字的图片，然后重新做成8-bit的图片，替换原来的16-bit的图，重新run一下你的项目，就OK了。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;这次，对公司的线上项目进行一次小的升级，主要是针对iOS10的一些适配和之前存在的小问题进行修复。却在测试阶段出现了各种闪退，其中有：EXC_BAD_ACCESS, SIGNAL SIGABRT,且crash位置各异，并且只在iOS9.3以下闪退（此处可能不严谨，测试机只有iOS8.4以及iOS9.X、iOS10），而且Xcode 7在任何版本iOS都不闪退。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="iOS开发" scheme="http://yoursite.com/categories/iOS%E5%BC%80%E5%8F%91/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>swift密文输入UITextfield内存问题</title>
+    <link href="http://yoursite.com/2018/04/01/swift%E5%AF%86%E6%96%87%E8%BE%93%E5%85%A5UITextfield%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98/"/>
+    <id>http://yoursite.com/2018/04/01/swift密文输入UITextfield内存问题/</id>
+    <published>2018-03-31T16:00:00.000Z</published>
+    <updated>2018-04-04T09:40:32.345Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>今天帮基友看一个问题，一个注册页面，密码框输入到一定字符数量后内存就暴增，而用户名输入框却不会有这个问题，一开始以为是他用的第三方控件的问题，后来改成原生的UITextfield，还是会有这个问题，故排除之。</p></blockquote><a id="more"></a><h3 id="带着好奇心google了一下"><a href="#带着好奇心google了一下" class="headerlink" title="带着好奇心google了一下"></a>带着好奇心google了一下</h3><p><img src="http://upload-images.jianshu.io/upload_images/1445324-48d6dd4e3bea39a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2016-12-05 下午4.50.05.png"></p><p>找到如下一个描述，关于密文输入下会内存泄漏的问题，刚好符合现在的情况（用户名输入框不会引起内存泄漏，而密码输入框会这样）。一个<a href="https://forums.developer.apple.com/thread/66923" target="_blank" rel="noopener">不稳定的传送门</a>。<br><img src="http://upload-images.jianshu.io/upload_images/1445324-ea429eb10260f20e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="搜索结果"></p><p>原话：<br><em>I found the issue it was the font size of my text. For some reason if the font size is 20 and secure text is enabled when you reach 14 characters the app freezes. Can someone explain why this is happening or is it just an iOS bug that needs to be fixed.</em><br>某些情况下，如果你的字体大小达到了20，并且打开了密文输入，当你输入字符数达到14个的时候，app会卡死（模拟器下），真机下应该会崩溃。</p><h3 id="来看看有哪些情况"><a href="#来看看有哪些情况" class="headerlink" title="来看看有哪些情况"></a>来看看有哪些情况</h3><p>新建了一个只有一个UITextfield的应用：</p><p><strong>1. font:20,Min Font Size:19</strong>，崩溃</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-5faf08055085f8ab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="参数"></p><p>当我输入到第十五个字符的时候，内存开始无限制增长：</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-542b08c0b0687cb1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2016-12-05 下午4.58.41.png"></p><p><strong>2. font:19,Min Font Size:19</strong>，不会崩溃</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-36425e8b721aa03f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="只修改Font为19"></p><p><strong>3. font:19,Min Font Size:20</strong>，不会崩溃</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-c498dbfd5166806e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Min Font Size改为20"></p><p><strong>4. font:20,Min Font Size:20</strong>，不会崩溃</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-847e440d58895503.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="都改为20"></p><p><strong>5. 在第一种情况下勾除Adjust to Fit</strong>，不会崩溃</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-a8c6fbd781c0e3c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="勾除Adjust to Fit"></p><h3 id="排除那哥们思路进行的测试"><a href="#排除那哥们思路进行的测试" class="headerlink" title="排除那哥们思路进行的测试"></a>排除那哥们思路进行的测试</h3><p><strong>两个都低于20，但是Font比Min Font Size大</strong>，崩溃</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-77b6cd4861cb70d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="崩溃"></p><p>其实这个并没有临界值，原因呢？如下面这个，不会崩溃。</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-1d8fd9ccd8d96a25.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="不会崩溃"></p><p>但是<strong>只要Font比Min Font Size大，并且Min Font Size越小，就越不容易崩溃。如果要达到会崩溃的地步，就需要两者的差值越大越容易崩溃。</strong>如下面这个：</p><p><img src="http://upload-images.jianshu.io/upload_images/1445324-7fe3a834a2dbcd88.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="成功崩溃"></p><h3 id="最后说几句废话"><a href="#最后说几句废话" class="headerlink" title="最后说几句废话"></a>最后说几句废话</h3><p>这是自己在swift下做的简单测试，从现象来看，应该是官方的bug，期待日后会fix掉。</p><p><em>如果有不正确的地方，欢迎指正！</em></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;今天帮基友看一个问题，一个注册页面，密码框输入到一定字符数量后内存就暴增，而用户名输入框却不会有这个问题，一开始以为是他用的第三方控件的问题，后来改成原生的UITextfield，还是会有这个问题，故排除之。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="iOS开发" scheme="http://yoursite.com/categories/iOS%E5%BC%80%E5%8F%91/"/>
+    
+    
+  </entry>
+  
+</feed>

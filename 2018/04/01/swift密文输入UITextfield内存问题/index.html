@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> swift密文输入UITextfield内存问题 · Chenyn</title><meta name="description" content="swift密文输入UITextfield内存问题 - Gongbiao Le"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.jpeg"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Chenyn"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.jpeg" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://weibo.com/u/1780200685" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/lgb1234a" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">swift密文输入UITextfield内存问题</h1><div class="post-info">Apr 1, 2018</div><div class="post-content"><blockquote>
+<p>今天帮基友看一个问题，一个注册页面，密码框输入到一定字符数量后内存就暴增，而用户名输入框却不会有这个问题，一开始以为是他用的第三方控件的问题，后来改成原生的UITextfield，还是会有这个问题，故排除之。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="带着好奇心google了一下"><a href="#带着好奇心google了一下" class="headerlink" title="带着好奇心google了一下"></a>带着好奇心google了一下</h3><p><img src="http://upload-images.jianshu.io/upload_images/1445324-48d6dd4e3bea39a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2016-12-05 下午4.50.05.png"></p>
+<p>找到如下一个描述，关于密文输入下会内存泄漏的问题，刚好符合现在的情况（用户名输入框不会引起内存泄漏，而密码输入框会这样）。一个<a href="https://forums.developer.apple.com/thread/66923" target="_blank" rel="noopener">不稳定的传送门</a>。<br><img src="http://upload-images.jianshu.io/upload_images/1445324-ea429eb10260f20e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="搜索结果"></p>
+<p>原话：<br><em>I found the issue it was the font size of my text. For some reason if the font size is 20 and secure text is enabled when you reach 14 characters the app freezes. Can someone explain why this is happening or is it just an iOS bug that needs to be fixed.</em><br>某些情况下，如果你的字体大小达到了20，并且打开了密文输入，当你输入字符数达到14个的时候，app会卡死（模拟器下），真机下应该会崩溃。</p>
+<h3 id="来看看有哪些情况"><a href="#来看看有哪些情况" class="headerlink" title="来看看有哪些情况"></a>来看看有哪些情况</h3><p>新建了一个只有一个UITextfield的应用：</p>
+<p><strong>1. font:20,Min Font Size:19</strong>，崩溃</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-5faf08055085f8ab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="参数"></p>
+<p>当我输入到第十五个字符的时候，内存开始无限制增长：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-542b08c0b0687cb1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2016-12-05 下午4.58.41.png"></p>
+<p><strong>2. font:19,Min Font Size:19</strong>，不会崩溃</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-36425e8b721aa03f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="只修改Font为19"></p>
+<p><strong>3. font:19,Min Font Size:20</strong>，不会崩溃</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-c498dbfd5166806e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Min Font Size改为20"></p>
+<p><strong>4. font:20,Min Font Size:20</strong>，不会崩溃</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-847e440d58895503.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="都改为20"></p>
+<p><strong>5. 在第一种情况下勾除Adjust to Fit</strong>，不会崩溃</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-a8c6fbd781c0e3c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="勾除Adjust to Fit"></p>
+<h3 id="排除那哥们思路进行的测试"><a href="#排除那哥们思路进行的测试" class="headerlink" title="排除那哥们思路进行的测试"></a>排除那哥们思路进行的测试</h3><p><strong>两个都低于20，但是Font比Min Font Size大</strong>，崩溃</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-77b6cd4861cb70d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="崩溃"></p>
+<p>其实这个并没有临界值，原因呢？如下面这个，不会崩溃。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-1d8fd9ccd8d96a25.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="不会崩溃"></p>
+<p>但是<strong>只要Font比Min Font Size大，并且Min Font Size越小，就越不容易崩溃。如果要达到会崩溃的地步，就需要两者的差值越大越容易崩溃。</strong>如下面这个：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1445324-7fe3a834a2dbcd88.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="成功崩溃"></p>
+<h3 id="最后说几句废话"><a href="#最后说几句废话" class="headerlink" title="最后说几句废话"></a>最后说几句废话</h3><p>这是自己在swift下做的简单测试，从现象来看，应该是官方的bug，期待日后会fix掉。</p>
+<p><em>如果有不正确的地方，欢迎指正！</em></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/04/01/Xcode-8在iOS9-3之前的设备（真机或模拟器）上调试，频繁crash，crash位置随机，且无崩溃原因 /" class="prev">prev_post</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'chenyn';
+var disqus_identifier = '2018/04/01/swift密文输入UITextfield内存问题/';
+var disqus_title = 'swift密文输入UITextfield内存问题';
+var disqus_url = 'http://yoursite.com/2018/04/01/swift密文输入UITextfield内存问题/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//chenyn.disqus.com/count.js" async></script><div class="copyright"><p>© 2018 <a href="http://yoursite.com">Gongbiao Le</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
