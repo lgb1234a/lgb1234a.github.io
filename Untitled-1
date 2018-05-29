@@ -1,0 +1,4 @@
+// 行程管家
+tuniuapp://page?iosPageName=TNReactNativeViewController&androidPageName=com.tuniu.app.ui.activity.TNReactNativeActivity&parameters={"rctModuleName":"travelManager"}
+// 行程必备
+tuniuapp://page?iosPageName=TNReactNativeViewController&androidPageName=com.tuniu.app.ui.activity.TNReactNativeActivity&parameters={"rctModuleName": "travelNecessary","rctModuleParams":{"cityName":StringValue}}
