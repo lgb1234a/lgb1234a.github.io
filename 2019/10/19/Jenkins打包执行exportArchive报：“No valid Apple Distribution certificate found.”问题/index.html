@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题 · Chenyn</title><meta name="description" content="Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题 - chenynle@gmail.com"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.jpeg"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Chenyn"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.jpeg" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://weibo.com/u/1780200685" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/lgb1234a" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题</h1><div class="post-info">Oct 19, 2019</div><div class="post-content"><p>#Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题</p>
+<blockquote>
+<p>在升级Xcode11之后，偶然中给描述文件新增了几台测试设备，然后替换描述文件之后打包就报错。</p>
+</blockquote>
+<p><img src="https://s2.ax1x.com/2019/10/19/Kn3DFU.png" alt="1"></p>
+<p>###几番排查之后，在Apple developer描述文件管理后台发现了端倪，由于新替换的描述文件是同事给我的，所以应该是他在新增设备的时候没多加注意；<br><img src="https://s2.ax1x.com/2019/10/19/KnGxzQ.png" alt="2"></p>
+<p>###上图可以看到，苹果针对Xcode11，新增了一个证书，勾选新的选项，重新安装并替换一下这个描述文件，然后我们再去证书管理下面去安装一下新的开发者证书；<br><img src="https://s2.ax1x.com/2019/10/19/KnJtQH.png" alt="3"></p>
+<p>###对比一下我们不难发现，新的证书前缀是<code>Apple Distribution/Development:</code>，而之前的证书是<code>iPhone Distribution/Development:</code>。替换完新的证书，就可以成功用Jenkins打出新包了。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2019/09/16/Flutter iOS实战随笔/" class="next">next_post</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'chenyn';
+var disqus_identifier = '2019/10/19/Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题/';
+var disqus_title = 'Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题';
+var disqus_url = 'http://yoursite.com/2019/10/19/Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//chenyn.disqus.com/count.js" async></script><div class="copyright"><p>© 2018 - 2019 <a href="http://yoursite.com">chenynle@gmail.com</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
