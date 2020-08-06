@@ -7,7 +7,7 @@
 <p>###几番排查之后，在Apple developer描述文件管理后台发现了端倪，由于新替换的描述文件是同事给我的，所以应该是他在新增设备的时候没多加注意；<br><img src="https://s2.ax1x.com/2019/10/19/KnGxzQ.png" alt="2"></p>
 <p>###上图可以看到，苹果针对Xcode11，新增了一个证书，勾选新的选项，重新安装并替换一下这个描述文件，然后我们再去证书管理下面去安装一下新的开发者证书；<br><img src="https://s2.ax1x.com/2019/10/19/KnJtQH.png" alt="3"></p>
 <p>###对比一下我们不难发现，新的证书前缀是<code>Apple Distribution/Development:</code>，而之前的证书是<code>iPhone Distribution/Development:</code>。替换完新的证书，就可以成功用Jenkins打出新包了。</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2019/09/16/Flutter%20iOS%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'chenyn';
+</div></article></div></main><footer><div class="paginator"><a href="/2019/09/16/Flutter%20iOS%E5%AE%9E%E6%88%98%E9%9A%8F%E7%AC%94%EF%BC%88%E9%87%8D%E6%9E%84%E4%B9%8B%E6%97%85%EF%BC%89/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'chenyn';
 var disqus_identifier = '2019/10/19/Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题/';
 var disqus_title = 'Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题';
 var disqus_url = 'http://yoursite.com/2019/10/19/Jenkins打包执行exportArchive报：“No valid Apple Distribution certificate found.”问题/';
